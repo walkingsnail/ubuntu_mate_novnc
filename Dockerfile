@@ -11,19 +11,8 @@ ENV NOVNC_VERSION 0.6.2
 ENV SCREEN_DIMENSIONS 1024x768x24
 ENV DESKTOP_USERNAME ericfu
 
-RUN echo "" > /etc/apt/sources.list \
-    && echo "deb http://mirrors.163.com/ubuntu/ xenial main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.163.com/ubuntu/ xenial-backports main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.163.com/ubuntu/ xenial-proposed main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.163.com/ubuntu/ xenial-security main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb http://mirrors.163.com/ubuntu/ xenial-updates main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial mainpass multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-backports main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-proposed main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-security main multiverse restricted universe" >> /etc/apt/sources.list \
-    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-updates main multiverse restricted universe" >> /etc/apt/sources.list \
-    && apt-get clean \
-    && apt-get update && \
+RUN apt-get clean \
+    && apt-get update -y && \
     apt-get install -y supervisor && \
     apt-get autoclean && apt-get autoremove && \
     rm -rf /var/lib/apt/lists/*
