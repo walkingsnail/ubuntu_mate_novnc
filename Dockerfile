@@ -1,16 +1,21 @@
 # ubuntu with Mate and noVNC
-# VNC port: 5900, noVNC port: 6080
-# user and passwd: $DESKTOP_USERNAME
+# VNC port: 5900, noVNC port: 6080, passwd: 888888 ($VNC_PW)
+# ubuntu user and passwd: $DESKTOP_USERNAME
 
 FROM ubuntu
 
 MAINTAINER EF <3178323@qq.com>
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV NOVNC_VERSION 0.6.2
-ENV SCREEN_DIMENSIONS 1024x768x24
 ENV DESKTOP_USERNAME ericfu
+ENV VNC_PW 888888
+ENV DEBIAN_FRONTEND noninteractive
+ENV SCREEN_DIMENSIONS 1280x768x24
+ENV TZ=Asia/Shanghai
 
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Uses local apt sources
 RUN echo "" > /etc/apt/sources.list \
     && echo "deb http://mirrors.163.com/ubuntu/ xenial main multiverse restricted universe" >> /etc/apt/sources.list \
     && echo "deb http://mirrors.163.com/ubuntu/ xenial-backports main multiverse restricted universe" >> /etc/apt/sources.list \
@@ -39,7 +44,7 @@ RUN apt-get update -y && \
     && useradd -ms /bin/bash ${DESKTOP_USERNAME} && \
     (echo ${DESKTOP_USERNAME} && echo ${DESKTOP_USERNAME} ) | passwd ${DESKTOP_USERNAME} && \
     mkdir /home/${DESKTOP_USERNAME}/.vnc/ && \
-    x11vnc -storepasswd ${DESKTOP_USERNAME} /home/${DESKTOP_USERNAME}/.vnc/passwd && \
+    x11vnc -storepasswd ${VNC_PW} /home/${DESKTOP_USERNAME}/.vnc/passwd && \
     chown -R ${DESKTOP_USERNAME}:${DESKTOP_USERNAME} /home/${DESKTOP_USERNAME}/.vnc && \
     chmod 0640 /home/${DESKTOP_USERNAME}/.vnc/passwd && \
     rm -rf /var/lib/apt/lists/*
@@ -57,4 +62,4 @@ EXPOSE 5900 6080
 COPY supervisor_novnc.conf /etc/supervisor/conf.d/novnc.conf
 COPY supervisor_mate.conf /etc/supervisor/conf.d/mate.conf
 
-CMD ["/usr/bin/supervisord", "-n"]
+ENTRYPOINT ["/usr/bin/supervisord", "-n"]
