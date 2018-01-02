@@ -11,7 +11,18 @@ ENV NOVNC_VERSION 0.6.2
 ENV SCREEN_DIMENSIONS 1024x768x24
 ENV DESKTOP_USERNAME ericfu
 
-RUN apt-get clean \
+RUN echo "" > /etc/apt/sources.list \
+    && echo "deb http://mirrors.163.com/ubuntu/ xenial main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.163.com/ubuntu/ xenial-backports main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.163.com/ubuntu/ xenial-proposed main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.163.com/ubuntu/ xenial-security main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb http://mirrors.163.com/ubuntu/ xenial-updates main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-backports main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-proposed main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-security main multiverse restricted universe" >> /etc/apt/sources.list \
+    && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-updates main multiverse restricted universe" >> /etc/apt/sources.list \
+    && apt-get clean \
     && apt-get update -y && \
     apt-get install -y supervisor && \
     apt-get autoclean && apt-get autoremove && \
@@ -20,11 +31,12 @@ RUN apt-get clean \
 RUN apt-get update -y && \
     apt-get install -y x11vnc wget git python python-numpy \
     net-tools tar gzip xvfb && \
-    wget https://github.com/novnc/noVNC/archive/v${NOVNC_VERSION}.tar.gz && \
-    tar -zxf v${NOVNC_VERSION}.tar.gz && mv noVNC-${NOVNC_VERSION} noVNC && \
-    rm v${NOVNC_VERSION}.tar.gz && \
-    apt-get autoclean && apt-get autoremove && \
-    useradd -ms /bin/bash ${DESKTOP_USERNAME} && \
+    mkdir -p /noVNC/utils/websockify \
+    && wget -qO- https://github.com/ConSol/noVNC/archive/consol_1.0.0.tar.gz | tar xz --strip 1 -C /noVNC \
+    &&  wget -qO- https://github.com/kanaka/websockify/archive/v0.7.0.tar.gz | tar xz --strip 1 -C /noVNC/utils/websockify \
+    && chmod +x -v /noVNC/utils/*.sh \
+    && cd /noVNC && ln -s vnc.html index.html\
+    && useradd -ms /bin/bash ${DESKTOP_USERNAME} && \
     (echo ${DESKTOP_USERNAME} && echo ${DESKTOP_USERNAME} ) | passwd ${DESKTOP_USERNAME} && \
     mkdir /home/${DESKTOP_USERNAME}/.vnc/ && \
     x11vnc -storepasswd ${DESKTOP_USERNAME} /home/${DESKTOP_USERNAME}/.vnc/passwd && \
