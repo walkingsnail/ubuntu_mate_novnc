@@ -29,7 +29,7 @@ RUN echo "" > /etc/apt/sources.list \
     && echo "deb-src http://mirrors.163.com/ubuntu/ xenial-updates main multiverse restricted universe" >> /etc/apt/sources.list \
     && apt-get clean \
     && apt-get update -y && \
-    apt-get install -y supervisor && \
+    apt-get install -y supervisor bzip2 curl rsync wget libgl1-mesa-glx qt5-default ttf-wqy-microhei net-tools iputils-ping supervisor && \
     apt-get autoclean && apt-get autoremove && \
     rm -rf /var/lib/apt/lists/*
 
